@@ -1,0 +1,9 @@
+name: CommandCanceler
+main: net.testusuke.open.CommandCanceler.Main
+version: @version@
+api-version: 1.15.2
+author: testusuke
+description: this plugin is able to cancel disallow Commands,and execute command when execute disallow commands.
+commands:
+  cc:
+    permission: commandcanceler.admin
