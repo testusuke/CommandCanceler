@@ -46,7 +46,7 @@ class Main : JavaPlugin(), CommandExecutor {
         try {
             executeCommand = config.getString("execute").toString()
             for (key in config.getConfigurationSection("command")!!.getKeys(false)) {
-                commandList.add(config.getString(key).toString())
+                commandList.add(config.getString("command.$key").toString())
             }
         } catch (e: NullPointerException) {
             logger.warning("データが存在しません。")
@@ -56,7 +56,6 @@ class Main : JavaPlugin(), CommandExecutor {
     private fun saveCommand() {
         config.set("execute", executeCommand)
         saveConfig()
-        if (commandList.isEmpty() || commandList.size == 0) return
         for ((i, command) in commandList.withIndex()) {
             config.set("command.$i", command)
         }
@@ -74,7 +73,7 @@ class Main : JavaPlugin(), CommandExecutor {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (sender !is Player || sender.hasPermission(permission)) return false
+        if (sender !is Player || !sender.hasPermission(permission)) return false
 
         if (args.isEmpty()) {
             sendHelp(sender)
@@ -98,17 +97,17 @@ class Main : JavaPlugin(), CommandExecutor {
                     sendHelp(sender)
                     return false
                 }
-                val command = getCommandFromStrings(args)?.toLowerCase()
-                if (command == null) {
+                val commands = getHeadCommand(args)?.toLowerCase()
+                if (commands == null) {
                     sendError(sender)
                     return false
                 }
-                if (commandList.contains(command)) {
+                if (commandList.contains(commands)) {
                     sender.sendMessage("${prefix}§cすでに登録されています。")
                     return true
                 }
-                commandList.add(command)
-                sender.sendMessage("${prefix}§aコマンドを登録しました。command: $command")
+                commandList.add(commands)
+                sender.sendMessage("${prefix}§aコマンドを登録しました。command: $commands")
                 return true
             }
             "remove" -> {
@@ -117,17 +116,17 @@ class Main : JavaPlugin(), CommandExecutor {
                     sendHelp(sender)
                     return false
                 }
-                val command = getCommandFromStrings(args)?.toLowerCase()
-                if (command == null) {
+                val commands = getHeadCommand(args)?.toLowerCase()
+                if (commands == null) {
                     sendError(sender)
                     return false
                 }
-                if (!commandList.contains(command)) {
+                if (!commandList.contains(commands)) {
                     sender.sendMessage("${prefix}§cコマンドが存在しません。")
                     return true
                 }
-                commandList.remove(command)
-                sender.sendMessage("${prefix}§aコマンドを削除しました。command: $command")
+                commandList.remove(commands)
+                sender.sendMessage("${prefix}§aコマンドを削除しました。command: $commands")
                 return true
             }
             "command" -> {
@@ -136,13 +135,13 @@ class Main : JavaPlugin(), CommandExecutor {
                     sendHelp(sender)
                     return false
                 }
-                val command = getCommandFromStrings(args)?.toLowerCase()
-                if (command == null) {
+                val commands = getCommandFromStrings(args)?.toLowerCase()
+                if (commands == null) {
                     sendError(sender)
                     return false
                 }
-                executeCommand = command
-                sender.sendMessage("${prefix}§a処罰コマンドを登録しました。command: $command")
+                executeCommand = commands
+                sender.sendMessage("${prefix}§a処罰コマンドを登録しました。command: $commands")
                 return true
             }
             "list" -> {
@@ -152,9 +151,9 @@ class Main : JavaPlugin(), CommandExecutor {
                 }
                 sender.sendMessage("${prefix}§c処罰コマンド: $executeCommand")
                 sender.sendMessage("${prefix}§aコマンドリストを表示します。")
-                if (commandList == null || commandList.isEmpty()) return false
-                for (command in commandList) {
-                    sender.sendMessage("- $command")
+                if (commandList.isEmpty()) return false
+                for (commands in commandList) {
+                    sender.sendMessage("- $commands")
                 }
             }
 
@@ -183,11 +182,11 @@ class Main : JavaPlugin(), CommandExecutor {
     }
 
     private fun sendError(player: Player) {
-        player.sendMessage("${prefix}使用方法が不正です。")
+        player.sendMessage("${prefix}§c使用方法が不正です。")
     }
 
     private fun sendDisable(player: Player) {
-        player.sendMessage("${prefix}現在使用できません。")
+        player.sendMessage("${prefix}§c現在使用できません。")
     }
 
     private fun sendHelp(player: Player) {
@@ -218,6 +217,19 @@ class Main : JavaPlugin(), CommandExecutor {
                 s1 += " $s"
             }
             i++
+
+        }
+        return s1
+    }
+    private fun getHeadCommand(command: Array<out String>): String? {
+        var s1: String? = null
+        var i = 0
+        for (s in command) {
+            if (i < 1) {
+                i++
+                continue
+            }
+            s1 = s
         }
         return s1
     }

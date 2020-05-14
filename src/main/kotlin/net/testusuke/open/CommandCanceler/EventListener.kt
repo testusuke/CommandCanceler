@@ -8,21 +8,22 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
-object EventListener:Listener {
+object EventListener : Listener {
 
     @EventHandler
-    fun onCommandExecute(event:PlayerCommandPreprocessEvent){
-        if(!Main.mode)return
+    fun onCommandExecute(event: PlayerCommandPreprocessEvent) {
+        if (!Main.mode) return
         val command = event.message
         val lowCommand = command.toLowerCase()
-        if(!commandList.contains(lowCommand))return
+        val args = lowCommand.split(" ")
+        if (!commandList.contains(args[0])) return
         val player = event.player
         //  ExecuteCommand
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),executeCommand)
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), executeCommand.replace("%player%",player.name))
         //  SendMessage
-        for(player in Bukkit.getOnlinePlayers()){
-            if(!player.hasPermission(permission))return
-            player.sendMessage("${player.name} was execute command.command: $command")
+        for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+            if (!onlinePlayer.hasPermission(permission)) return
+            onlinePlayer.sendMessage("${player.name} was execute command.command: $command")
         }
         //  Logger
         Bukkit.getLogger().info("${player.name} was execute command.command: $command")
