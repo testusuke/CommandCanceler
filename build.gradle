@@ -8,16 +8,13 @@ version '1.0'
 repositories {
     mavenCentral()
     maven {
-        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
-    }
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
+        url "https://papermc.io/repo/repository/maven-public/"
     }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT"
+    implementation("com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT")
 }
 
 compileKotlin {
