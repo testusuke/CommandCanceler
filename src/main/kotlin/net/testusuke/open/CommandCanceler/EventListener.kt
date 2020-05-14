@@ -23,9 +23,9 @@ object EventListener : Listener {
         //  SendMessage
         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
             if (!onlinePlayer.hasPermission(permission)) return
-            onlinePlayer.sendMessage("${player.name} was execute command.command: $command")
+            onlinePlayer.sendMessage("${player.name} executed disallow command.command: $command")
         }
         //  Logger
-        Bukkit.getLogger().info("${player.name} was execute command.command: $command")
+        Bukkit.getLogger().info("${player.name} executed disallow command.command: $command")
     }
 }
